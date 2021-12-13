@@ -33,16 +33,16 @@ def describe(df : pd.DataFrame):
     display(df.shape)
     
 
-def sample_driver(df, force_fraud):
+def sample_driver(df, force_fraud, col_fraud="fraud"):
     """
     Sample random driver from DataFrame
     """
     if not force_fraud is None:
-        driver_hash = np.random.choice(df.loc[df["fraud"] == force_fraud, "driver_hash"].unique())
+        driver_hash = np.random.choice(df.loc[df[col_fraud] == force_fraud, "driver_hash"].unique())
     else:
         driver_hash = np.random.choice(df["driver_hash"].unique())
     driver_data = df[df["driver_hash"] == driver_hash]
-    driver_fraud = driver_data["fraud"].replace({-1:"Unknown", 0:"Good", 1:"Fraud"}).values[0]
+    driver_fraud = driver_data[col_fraud].replace({-1:"Unknown", 0:"Good", 1:"Fraud"}).values[0]
     return driver_data, driver_hash, driver_fraud
     
     
