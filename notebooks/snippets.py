@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import folium
-from math import radians, cos, sin, asin, sqrt
+from math import radians, cos, sin, asin, acos, sqrt
 from matplotlib import pyplot as plt
 from matplotlib import colors
 from IPython.display import display
@@ -23,6 +23,28 @@ def haversine_approx(lat1, lon1, lat2, lon2):
     km = 6367 * c
     meters = km * 1000
     return meters
+
+
+def angle_approx(lat1_v1, lon1_v1, lat2_v1, lon2_v1, lat1_v2, lon1_v2, lat2_v2, lon2_v2, tol=1e-9):
+    """
+    Returns the angle in radians between vectors 'v1' and 'v2'
+    https://stackoverflow.com/questions/3380628/fast-arc-cos-algorithm
+    """
+    x1, y1 = (lat2_v1 - lat1_v1, lon2_v1 - lon1_v1)
+    x2, y2 = (lat2_v2 - lat1_v2, lon2_v2 - lon1_v2)
+    norm_v1 = sqrt(x1**2 + y1**2)
+    if norm_v1 < tol:
+        return 0.0
+    norm_v2 = sqrt(x2**2 + y2**2)
+    if norm_v2 < tol:
+        return 0.0
+    # from 0 to pi
+    angle1 = acos(np.clip(x1 / norm_v1, -1.0, 1.0))
+    angle2 = acos(np.clip(x2 / norm_v2, -1.0, 1.0))
+    # from -pi to pi
+    angle1 = angle1 * (y1 > 0) - angle1 * (y1 < 0)
+    angle2 = angle2 * (y2 > 0) - angle2 * (y2 < 0)
+    return angle1 - angle2
 
 
 def describe(df : pd.DataFrame):
