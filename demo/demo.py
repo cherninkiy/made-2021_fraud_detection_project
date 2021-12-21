@@ -52,6 +52,11 @@ if "drivers_files" not in st.session_state.keys():
 drivers_files = st.session_state["drivers_files"]
 print(f"Loaded {drivers_files.shape[0]} drivers")
 
+if "result_preds" not in st.session_state.keys():
+    result_csv = load_gdrive_file_data("1r3wFu7U30ozspUe-wCEXYUzWXnXUUNLu", credentials=creds)
+    st.session_state['result_preds'] = pd.read_csv(result_csv)
+result_preds = st.session_state["result_preds"]
+
 def refresh():
     if "folder_id" in st.session_state.keys():
         del st.session_state["folder_id"]
@@ -94,7 +99,9 @@ print(f"\tdriver_fraud: {driver_fraud}")
 
 st.write("Driver category:", driver_fraud)
 st.write("Driver hash:", driver_hash)
-
+st.write("Predictions:")
+mask = result_preds["driver_hash"] == int(driver_hash)
+st.write(result_preds[mask].drop(columns="driver_hash"))
 
 if map_gps or map_accel:
     files = get_gdrive_file_list(folder_id, credentials=creds)
